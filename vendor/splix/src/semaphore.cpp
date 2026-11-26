@@ -80,9 +80,10 @@ Semaphore& Semaphore::operator --(int)
 Semaphore& Semaphore::operator ++(int)
 {
     pthread_mutex_lock(&_lock);
-    if (!_counter)
-        pthread_cond_signal(&_cond);
+    // macOS port: always signal. The original only signalled on a 0 -> 1
+    // transition, which loses wake-ups when several threads are waiting.
     _counter++;
+    pthread_cond_signal(&_cond);
     pthread_mutex_unlock(&_lock);
 
     return *this;

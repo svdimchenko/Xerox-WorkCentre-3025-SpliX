@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate release tag
+        run: |
+          version="$(sed -n 's/^VERSION[[:space:]]*:= *//p' Makefile)"
+          test "$GITHUB_REF_NAME" = "v$version"
+      - name: Install prek
+        run: python -m pip install --disable-pip-version-check prek==0.5.12
+      - name: Run hooks
+        run: prek run --all-files
+      - name: Build and test print pipeline
+        run: make test
+      - name: Build installer package
+        run: make pkg
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "build/Xerox-WorkCentre-3025-SpliX-$(sed -n 's/^VERSION[[:space:]]*:= *//p' Makefile).pkg" \
+            --title "Xerox WorkCentre 3025 SpliX $GITHUB_REF_NAME" \
+            --generate-notes

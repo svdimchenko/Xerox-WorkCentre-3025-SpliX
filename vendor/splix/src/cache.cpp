@@ -242,7 +242,7 @@ static void* _cacheControllerThread(void *_exitVar)
         if (_waitingList && !(_pagesInMemory == CACHESIZE || 
             _pagesInMemory == _pagesInTable)) {
             preloadPage = whatToDo;
-            whatToDo = ~whatToDo;
+            whatToDo = !whatToDo;  // macOS port: was ~whatToDo (always true)
         // One of the two thing to do
         } else
             preloadPage = (_waitingList == NULL);

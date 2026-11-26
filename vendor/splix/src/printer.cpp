@@ -185,6 +185,22 @@ bool Printer::loadInformation(const Request& request)
     return true;
 }
 
+/*
+ * macOS port: job titles (e.g. Safari page titles) and user names are
+ * interpolated into quoted PJL strings. Replace characters that would end
+ * the string or the PJL line, and keep the value to a sane length.
+ */
+static const char* _pjlSafe(const char *in, char *out, size_t size)
+{
+    size_t i = 0;
+
+    for (; in && *in && i + 1 < size; in++)
+        out[i++] = (*in == '"') ? '\'' :
+            ((unsigned char)*in < 0x20 || *in == 0x7f) ? ' ' : *in;
+    out[i] = 0;
+    return out;
+}
+
 bool Printer::sendPJLHeader(const Request& request,
                          unsigned long    compression,
                          unsigned long    xResolution,
@@ -194,22 +210,26 @@ bool Printer::sendPJLHeader(const Request& request,
     struct tm *timeinfo;
     time_t timestamp;
 
+    char user[80], title[80];
+
     time(&timestamp);
     timeinfo = localtime(&timestamp);
+    _pjlSafe(request.userName(), user, sizeof(user));
+    _pjlSafe(request.jobTitle(), title, sizeof(title));
 
     printf("%s", _beginPJL);
 
     if (0x15 == compression) {
-        printf("@PJL COMMENT USERNAME=\"Username: %s\"\n", request.userName());
-        printf("@PJL COMMENT DOCNAME=\"%s\"\n", request.jobTitle());
-        printf("@PJL JOB NAME=\"%s\"\n", request.jobTitle());
+        printf("@PJL COMMENT USERNAME=\"Username: %s\"\n", user);
+        printf("@PJL COMMENT DOCNAME=\"%s\"\n", title);
+        printf("@PJL JOB NAME=\"%s\"\n", title);
     }
 
     // Information about the job
     printf("@PJL DEFAULT SERVICEDATE=%04u%02u%02u\n", 1900+timeinfo->tm_year,
         timeinfo->tm_mon+1, timeinfo->tm_mday);
-    printf("@PJL SET USERNAME=\"%s\"\n", request.userName());
-    printf("@PJL SET JOBNAME=\"%s\"\n", request.jobTitle());
+    printf("@PJL SET USERNAME=\"%s\"\n", user);
+    printf("@PJL SET JOBNAME=\"%s\"\n", title);
 
     if (0x15 == compression)
         printf("@PJL SET MULTIBINMODE=%s\n", "PRINTERDEFAULT");
