@@ -10,6 +10,13 @@ repos:
       - id: check-yaml
       - id: detect-private-key
 
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.6
+    hooks:
+      - id: ruff-format
+      - id: ruff-check
+        args: [--isolated, --select=E4,E7,E9,F]
+
   - repo: local
     hooks:
       - id: check-shell-syntax
