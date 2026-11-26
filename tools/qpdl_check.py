@@ -60,7 +60,7 @@ def read_cups_raster(path):
     off = 4
     pages = []
     while off < len(data):
-        hdr = data[off:off + 1796]
+        hdr = data[off : off + 1796]
         if len(hdr) < 1796:
             raise CheckError("truncated raster page header")
         u = lambda o: struct.unpack_from(endian + "I", hdr, o)[0]
@@ -83,7 +83,7 @@ def read_cups_raster(path):
         rows = []
         if not compressed:
             for _ in range(height):
-                rows.append(data[off:off + bpl])
+                rows.append(data[off : off + bpl])
                 off += bpl
         else:
             while len(rows) < height:
@@ -96,11 +96,11 @@ def read_cups_raster(path):
                     if n == 128:
                         line.extend(b"\x00" * (bpl - len(line)))
                     elif n < 128:
-                        line.extend(data[off:off + 1] * (n + 1))
+                        line.extend(data[off : off + 1] * (n + 1))
                         off += 1
                     else:
                         cnt = 257 - n
-                        line.extend(data[off:off + cnt])
+                        line.extend(data[off : off + cnt])
                         off += cnt
                 rows.extend([bytes(line[:bpl])] * repeat)
             rows = rows[:height]
@@ -120,7 +120,7 @@ def decompress_0x11(payload, width, height, little):
     occur = struct.unpack_from(e + "64H", payload, 4)
     idx = 4 + 0x40 * 2
     out = bytearray(b"\xff" * band_size)
-    out[:last_occur] = payload[idx:idx + last_occur]
+    out[:last_occur] = payload[idx : idx + last_occur]
     w = last_occur
     idx += last_occur
     n = len(payload)
@@ -135,19 +135,18 @@ def decompress_0x11(payload, width, height, little):
             src = w - dist
             if src < 0 or w + count > band_size:
                 raise CheckError("0x11 back-reference out of range")
-            for i in range(count):          # may overlap: copy bytewise
+            for i in range(count):  # may overlap: copy bytewise
                 out[w + i] = out[src + i]
             w += count
         else:
             cnt = counter + 1
             if w + cnt > band_size:
                 raise CheckError("0x11 literal run overflows band")
-            out[w:w + cnt] = payload[idx:idx + cnt]
+            out[w : w + cnt] = payload[idx : idx + cnt]
             idx += cnt
             w += cnt
     if w != band_size:
-        raise CheckError("0x11 band decoded to %d bytes, expected %d"
-                         % (w, band_size))
+        raise CheckError("0x11 band decoded to %d bytes, expected %d" % (w, band_size))
     # column-major + inverted  ->  row-major, 1 = black
     cols = width // 8
     rows = []
@@ -171,14 +170,13 @@ def parse_qpdl(data):
     pages = []
     while True:
         if data[off] == 0x09:
-            if data[off + 1:off + 1 + len(UEL)] != UEL:
+            if data[off + 1 : off + 1 + len(UEL)] != UEL:
                 raise CheckError("job footer is not 0x09 + UEL")
             off += 1 + len(UEL)
             break
-        hdr = data[off:off + 0x11]
+        hdr = data[off : off + 0x11]
         if hdr[0] != 0:
-            raise CheckError("bad page header signature 0x%02x at %d"
-                             % (hdr[0], off))
+            raise CheckError("bad page header signature 0x%02x at %d" % (hdr[0], off))
         page = {
             "yres": hdr[1] * 100,
             "copies": (hdr[2] << 8) | hdr[3],
@@ -209,13 +207,14 @@ def parse_qpdl(data):
             comp = data[off + 6]
             size = struct.unpack_from(">I", data, off + 7)[0]
             off += 11
-            content = data[off:off + size]
+            content = data[off : off + size]
             off += size
             if len(content) != size:
                 raise CheckError("truncated band %d" % bandnr)
             if comp != 0x11:
-                raise CheckError("band %d uses compression 0x%x, expected 0x11"
-                                 % (bandnr, comp))
+                raise CheckError(
+                    "band %d uses compression 0x%x, expected 0x11" % (bandnr, comp)
+                )
             body, given = content[:-4], struct.unpack(">I", content[-4:])[0]
             if (sum(body) & 0xFFFFFFFF) != given:
                 raise CheckError("band %d checksum mismatch" % bandnr)
@@ -228,9 +227,11 @@ def parse_qpdl(data):
                 raise CheckError("band %d bad sub-header %s" % (bandnr, sig4.hex()))
             if bandnr in page["bands"]:
                 raise CheckError("duplicate band %d" % bandnr)
-            page["bands"][bandnr] = (width, height,
-                                     decompress_0x11(body[4:], width, height,
-                                                     little))
+            page["bands"][bandnr] = (
+                width,
+                height,
+                decompress_0x11(body[4:], width, height, little),
+            )
         pages.append(page)
     if off != len(data):
         raise CheckError("%d trailing bytes after job footer" % (len(data) - off))
@@ -261,16 +262,16 @@ _POPCOUNT = bytes(bin(i).count("1") for i in range(256))
 
 
 def write_png(path, width, rows, scale):
-    scale = max(8, scale - scale % 8)        # whole bytes per output pixel
+    scale = max(8, scale - scale % 8)  # whole bytes per output pixel
     step = scale // 8
     ow, oh = max(1, width // scale), max(1, len(rows) // scale)
     area = scale * scale
     raw = bytearray()
     for oy in range(oh):
         counts = [0] * ow
-        for r in rows[oy * scale:(oy + 1) * scale]:
+        for r in rows[oy * scale : (oy + 1) * scale]:
             for ox in range(ow):
-                counts[ox] += sum(_POPCOUNT[b] for b in r[ox * step:(ox + 1) * step])
+                counts[ox] += sum(_POPCOUNT[b] for b in r[ox * step : (ox + 1) * step])
         raw.append(0)
         raw.extend(255 - (c * 255) // area for c in counts)
 
@@ -291,8 +292,12 @@ def main():
     ap.add_argument("--raster", required=True)
     ap.add_argument("--qpdl", required=True)
     ap.add_argument("--png-dir")
-    ap.add_argument("--margin-pt", type=float, default=12.5,
-                    help="PPD HWMargins left/top in points (default 12.5)")
+    ap.add_argument(
+        "--margin-pt",
+        type=float,
+        default=12.5,
+        help="PPD HWMargins left/top in points (default 12.5)",
+    )
     ap.add_argument("--expect-pages", type=int)
     args = ap.parse_args()
 
@@ -307,20 +312,25 @@ def main():
                 print("    " + line)
 
         if args.expect_pages is not None and len(qpages) != args.expect_pages:
-            raise CheckError("expected %d pages, QPDL has %d"
-                             % (args.expect_pages, len(qpages)))
+            raise CheckError(
+                "expected %d pages, QPDL has %d" % (args.expect_pages, len(qpages))
+            )
         if len(rpages) != len(qpages):
-            raise CheckError("raster has %d pages, QPDL has %d"
-                             % (len(rpages), len(qpages)))
+            raise CheckError(
+                "raster has %d pages, QPDL has %d" % (len(rpages), len(qpages))
+            )
 
         for n, ((info, rrows), qp) in enumerate(zip(rpages, qpages), 1):
             xres, yres = info["hwres"]
             if (qp["xres"], qp["yres"]) != (xres, yres):
-                raise CheckError("page %d: resolution %sx%s, raster is %sx%s"
-                                 % (n, qp["xres"], qp["yres"], xres, yres))
+                raise CheckError(
+                    "page %d: resolution %sx%s, raster is %sx%s"
+                    % (n, qp["xres"], qp["yres"], xres, yres)
+                )
             if qp["qpdl"] != 3:
-                raise CheckError("page %d: QPDL version %d, expected 3"
-                                 % (n, qp["qpdl"]))
+                raise CheckError(
+                    "page %d: QPDL version %d, expected 3" % (n, qp["qpdl"])
+                )
             bpl, rh = info["bpl"], info["height"]
             qwidth, qrows = assemble(qp)
             qbpl = qwidth // 8
@@ -345,8 +355,15 @@ def main():
                 clipping_y = 0
                 output_y = (page_height - rh) // 2
             copied_rows = min(rh - clipping_y, page_height - 2 * margin_height)
-            hardware_margin_y = (math.ceil(args.margin_pt * yres / 72)
-                                 if info["margins"][1] else 0)
+            hardware_margin_x_bytes = (
+                (math.ceil(args.margin_pt * xres / 72) + 7) // 8
+                if info["margins"][0]
+                else 0
+            )
+            hardware_margin_y = (
+                math.ceil(args.margin_pt * yres / 72) if info["margins"][1] else 0
+            )
+            output_x = margin_width - hardware_margin_x_bytes
             output_y -= hardware_margin_y
 
             ink = 0
@@ -358,10 +375,13 @@ def main():
                 if output_y <= y < output_y + copied_rows:
                     src_y = clipping_y + y - output_y
                     src = rrows[src_y]
-                    copy_start = min(margin_width, qbpl)
-                    copy_end = min(margin_width + bytes_to_copy, qbpl)
-                    src_start = clipping_x + copy_start - margin_width
-                    expect[copy_start:copy_end] = src[src_start:src_start + copy_end - copy_start]
+                    copy_start = max(0, output_x)
+                    copy_end = min(output_x + bytes_to_copy, qbpl)
+                    if copy_start < copy_end:
+                        src_start = clipping_x + copy_start - output_x
+                        expect[copy_start:copy_end] = src[
+                            src_start : src_start + copy_end - copy_start
+                        ]
                 got = qrows[y] if y < len(qrows) else blank
                 if got != bytes(expect):
                     mismatched += 1
@@ -370,31 +390,62 @@ def main():
                 if got != blank:
                     ink += sum(bin(b).count("1") for b in got)
 
-            print("Page %d: %dx%d dpi, QPDL v%d, paper type %d, source %d, "
-                  "duplex %d/%d, %d bands, band width %d px, %d black pixels"
-                  % (n, qp["xres"], qp["yres"], qp["qpdl"], qp["papertype"],
-                     qp["source"], qp["duplex"], qp["tumble"], len(qp["bands"]),
-                     qwidth, ink))
+            print(
+                "Page %d: %dx%d dpi, QPDL v%d, paper type %d, source %d, "
+                "duplex %d/%d, %d bands, band width %d px, %d black pixels"
+                % (
+                    n,
+                    qp["xres"],
+                    qp["yres"],
+                    qp["qpdl"],
+                    qp["papertype"],
+                    qp["source"],
+                    qp["duplex"],
+                    qp["tumble"],
+                    len(qp["bands"]),
+                    qwidth,
+                    ink,
+                )
+            )
             if mismatched:
                 raster_ink = [y for y, row in enumerate(rrows) if any(row)]
                 qpdl_ink = [y for y, row in enumerate(qrows) if any(row)]
                 raise CheckError(
                     "page %d: %d rows differ from input raster (first at row %d); "
                     "raster=%dx%d colorspace=%d/%d margins=%s page-size=%s; "
-                    "QPDL=%dx%d; layout output-y=%d hardware-margin-y=%d "
+                    "QPDL=%dx%d; layout output-x=%d hardware-margin-x-bytes=%d "
+                    "output-y=%d hardware-margin-y=%d "
                     "clip-y=%d copied-rows=%d; "
                     "ink rows raster=%s QPDL=%s"
-                    % (n, mismatched, first_bad, info["width"], rh,
-                       info["colorspace"], info["numcolors"], info["margins"],
-                       info["pagesize"], qwidth, len(qrows), output_y,
-                       hardware_margin_y, clipping_y, copied_rows,
-                       (raster_ink[0], raster_ink[-1]) if raster_ink else None,
-                       (qpdl_ink[0], qpdl_ink[-1]) if qpdl_ink else None))
+                    % (
+                        n,
+                        mismatched,
+                        first_bad,
+                        info["width"],
+                        rh,
+                        info["colorspace"],
+                        info["numcolors"],
+                        info["margins"],
+                        info["pagesize"],
+                        qwidth,
+                        len(qrows),
+                        output_x,
+                        hardware_margin_x_bytes,
+                        output_y,
+                        hardware_margin_y,
+                        clipping_y,
+                        copied_rows,
+                        (raster_ink[0], raster_ink[-1]) if raster_ink else None,
+                        (qpdl_ink[0], qpdl_ink[-1]) if qpdl_ink else None,
+                    )
+                )
             if ink == 0:
                 raise CheckError("page %d: decoded page is blank" % n)
-            print("    decoded bands match input raster exactly "
-                  "(raster dimensions %d x %d, QPDL band width %d px)"
-                  % (bpl * 8, rh, qwidth))
+            print(
+                "    decoded bands match input raster exactly "
+                "(raster dimensions %d x %d, QPDL band width %d px)"
+                % (bpl * 8, rh, qwidth)
+            )
 
             if args.png_dir:
                 os.makedirs(args.png_dir, exist_ok=True)
