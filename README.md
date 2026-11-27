@@ -16,17 +16,25 @@ Printing only. Scanning isn't included.
 
 ```sh
 make test       # optional: offline end-to-end check, see below
-make install    # builds build/Xerox-WorkCentre-3025-SpliX-1.0.0.pkg, runs installer (sudo)
+make install    # builds build/Xerox-WorkCentre-3025-SpliX-<version>.pkg, runs installer (sudo)
 ```
+
+`<version>` is `VERSION` in the [Makefile](Makefile).
 
 Prebuilt installer packages are attached to each
 [GitHub Release](https://github.com/svdimchenko/Xerox-WorkCentre-3025-SpliX/releases).
 Download the `.pkg` asset and open it with Installer, or run
-`sudo installer -pkg Xerox-WorkCentre-3025-SpliX-1.0.0.pkg -target /`.
+`sudo installer -pkg Xerox-WorkCentre-3025-SpliX-<version>.pkg -target /`.
+
+The package isn't signed or notarized, so macOS may refuse to open a
+downloaded copy. Click **Open Anyway** in **System Settings → Privacy &
+Security**, or install it with the `sudo installer` command above, which isn't
+affected.
 
 Then plug in the printer and open **System Settings → Printers & Scanners → Add
 Printer**, select the WorkCentre 3025, and under **Use** choose
-**Xerox WorkCentre 3025 SpliX, 1.0.0** (Select Software… if it isn't preselected).
+**Xerox WorkCentre 3025 SpliX, &lt;version&gt;** (Select Software… if it isn't
+preselected).
 
 From the command line instead:
 
@@ -37,6 +45,14 @@ lpadmin -p WC3025 -E -v 'usb://Xerox/WorkCentre%203025?serial=…' \
 ```
 
 Uninstall with `make uninstall`. Printer queues are left in place and listed.
+If you installed from a release and have no source checkout, run the same
+steps by hand:
+
+```sh
+sudo rm -rf /Library/Printers/SpliX
+sudo rm -f "/Library/Printers/PPDs/Contents/Resources/Xerox WorkCentre 3025 SpliX.ppd.gz"
+sudo pkgutil --forget io.github.splix.wc3025
+```
 
 ### What gets installed
 
@@ -90,8 +106,10 @@ shell and Python tools. To run them manually on all tracked files, use
 GitHub Actions runs the hooks and `make test` on macOS for pushes and pull
 requests targeting `main`. Pull request titles must follow Conventional
 Commits, such as `feat: add support` or `fix: correct output`. Pushing a tag
-matching the Makefile version (for example, `v1.0.0`) runs the same checks,
-builds the installer package, and attaches it to a GitHub Release.
+matching the Makefile version (`v` followed by `VERSION`, for example
+`v0.0.1`) runs the same checks, builds the installer package, and attaches it
+to a GitHub Release. Pushes to `main` that change `docs/` also publish the
+project website to GitHub Pages.
 
 ## First test print: checklist
 
@@ -141,6 +159,9 @@ shows every change:
   cache thread never alternated between preload and store. Now uses `!`.
 - `src/printer.cpp`: job title and user name are sanitized before going into
   quoted PJL strings (`"` → `'`, control characters → space, max 79 bytes).
+- `src/document.cpp`: reads page headers with `cupsRasterReadHeader2` instead
+  of the deprecated `cupsRasterReadHeader`, and detects monochrome pages from
+  `cupsNumColors` instead of only `CUPS_CSPACE_K`.
 
 Built without JBIG (`-DDISABLE_JBIG`), since the WC3025 uses algorithm 0x11.
 `pstoqpdl` isn't built, because macOS rasterizes PDF itself.
