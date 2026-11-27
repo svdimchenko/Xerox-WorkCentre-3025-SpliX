@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WorkCentre 3025 macOS Driver</title>
+  <meta name="description" content="An open-source macOS print driver for the Xerox WorkCentre 3025, built on SpliX. Apple Silicon and Intel, macOS 11 and later.">
+  <meta property="og:title" content="WorkCentre 3025 driver for macOS">
+  <meta property="og:description" content="Print to a Xerox WorkCentre 3025 from current macOS. Open source, based on SpliX, GPL-2.0.">
+  <meta property="og:type" content="website">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#top">
+        <img src="favicon.svg" alt="" width="22" height="22">
+        <span>WC3025 SpliX</span>
+      </a>
+      <nav aria-label="Sections">
+        <a href="#install">Install</a>
+        <a href="#how">How it works</a>
+        <a href="#test-print">Test print</a>
+        <a href="#troubleshooting">Help</a>
+        <a href="https://github.com/svdimchenko/Xerox-WorkCentre-3025-SpliX">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow">Open-source driver for macOS 11 and later</p>
+          <h1>Print to your Xerox WorkCentre&nbsp;3025 from a current Mac.</h1>
+          <p class="lede">
+            Xerox's Mac driver stops at macOS 10.14. This package brings the
+            open-source <a href="https://github.com/OpenPrinting/splix">SpliX</a>
+            encoder to macOS as a native CUPS driver, so the WC3025 works over
+            USB on Apple Silicon and Intel Macs.
+          </p>
+          <div class="cta">
+            <a class="btn primary" id="download" href="https://github.com/svdimchenko/Xerox-WorkCentre-3025-SpliX/releases/latest">
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 19h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span id="download-label">Download the installer</span>
+            </a>
+            <a class="btn" href="https://github.com/svdimchenko/Xerox-WorkCentre-3025-SpliX">View source</a>
+          </div>
+          <p class="meta" id="release-meta">Free, GPL-2.0. Printing only; scanning isn't included.</p>
+          <ul class="facts" aria-label="At a glance">
+            <li><strong>macOS 11+</strong><span>Big Sur to current</span></li>
+            <li><strong>Universal</strong><span>arm64 + x86_64</span></li>
+            <li><strong>600 / 1200</strong><span>DPI</span></li>
+            <li><strong>USB</strong><span>connection</span></li>
+          </ul>
+        </div>
+
+        <figure class="sheet" aria-label="Illustration of the driver's test page">
+          <svg viewBox="0 0 210 297" role="img" aria-labelledby="sheet-title">
+            <title id="sheet-title">The test page used to check the driver: a frame, two diagonals, text lines, a solid block, a ten-step gray ramp and fine hairlines.</title>
+            <rect class="paper" x="0" y="0" width="210" height="297" rx="2"/>
+            <g class="ink">
+              <rect x="6.5" y="6.5" width="197" height="284" fill="none" stroke-width="0.9"/>
+              <path d="M6.5 6.5 L203.5 290.5 M203.5 6.5 L6.5 290.5" stroke-width="0.25" fill="none" opacity="0.55"/>
+              <rect x="19" y="22" width="120" height="7" rx="1"/>
+              <rect x="19" y="38" width="138" height="2.6" rx="1" opacity="0.7"/>
+              <rect x="19" y="44" width="150" height="2.6" rx="1" opacity="0.7"/>
+              <rect x="19" y="50" width="128" height="2.6" rx="1" opacity="0.7"/>
+              <rect x="19" y="72" width="42" height="42"/>
+              <g>
+                <rect x="70" y="72" width="12" height="42" opacity="0"/>
+                <rect x="82" y="72" width="12" height="42" opacity="0.11"/>
+                <rect x="94" y="72" width="12" height="42" opacity="0.22"/>
+                <rect x="106" y="72" width="12" height="42" opacity="0.33"/>
+                <rect x="118" y="72" width="12" height="42" opacity="0.44"/>
+                <rect x="130" y="72" width="12" height="42" opacity="0.56"/>
+                <rect x="142" y="72" width="12" height="42" opacity="0.67"/>
+                <rect x="154" y="72" width="12" height="42" opacity="0.78"/>
+                <rect x="166" y="72" width="12" height="42" opacity="0.89"/>
+                <rect x="178" y="72" width="12" height="42"/>
+              </g>
+              <path class="hairlines" d="M11 190v35M14 190v35M17 190v35M20 190v35M23 190v35M26 190v35M29 190v35M32 190v35M35 190v35M38 190v35M41 190v35M44 190v35M47 190v35M50 190v35M53 190v35M56 190v35M59 190v35M62 190v35M65 190v35M68 190v35M71 190v35M74 190v35M77 190v35M80 190v35M83 190v35M86 190v35M89 190v35M92 190v35M95 190v35M98 190v35M101 190v35M104 190v35M107 190v35M110 190v35M113 190v35M116 190v35M119 190v35M122 190v35M125 190v35M128 190v35M131 190v35M134 190v35M137 190v35M140 190v35M143 190v35M146 190v35M149 190v35M152 190v35M155 190v35M158 190v35M161 190v35M164 190v35M167 190v35M170 190v35M173 190v35M176 190v35M179 190v35M182 190v35M185 190v35M188 190v35M191 190v35M194 190v35M197 190v35M200 190v35" stroke-width="0.25" fill="none"/>
+              <text x="105" y="272" text-anchor="middle" font-size="26" font-family="Helvetica, Arial, sans-serif">1</text>
+            </g>
+          </svg>
+          <figcaption>The test page <code>make test</code> uses: frame, diagonals, gray ramp, hairlines.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="band" id="why">
+      <div class="wrap two-col">
+        <div>
+          <h2>Why this exists</h2>
+          <p>
+            The WorkCentre 3025 doesn't speak PostScript, PCL or AirPrint. It
+            only accepts Samsung's host-rendered format, SPL (QPDL v3), so the
+            Mac has to produce the exact byte stream itself. Generic drivers
+            can't do that, and Xerox never updated its own driver past
+            macOS&nbsp;10.14.
+          </p>
+          <p>
+            <a href="https://github.com/OpenPrinting/splix">SpliX</a>, now hosted
+            by OpenPrinting, already encodes QPDL for the WC3025 and its Samsung
+            twin, the M2070 series. This project builds it for current macOS,
+            fixes a few bugs, and packages it as a signed universal filter with a
+            PPD that macOS can pick up.
+          </p>
+        </div>
+        <ul class="checklist">
+          <li>Native CUPS driver, no emulation or print server</li>
+          <li>Universal binary for Apple Silicon and Intel</li>
+          <li>23 paper sizes, A3 to postcards and envelopes</li>
+          <li>600 and 1200 DPI</li>
+          <li>Manual 2-sided printing</li>
+          <li>Toner save, toner density, paper type and manual feed</li>
+          <li>Output checked bit for bit in CI before every release</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="wrap">
+        <h2>Install</h2>
+        <ol class="steps">
+          <li>
+            <h3>Download and run the installer</h3>
+            <p>
+              Get the <code>.pkg</code> from the
+              <a href="https://github.com/svdimchenko/Xerox-WorkCentre-3025-SpliX/releases/latest">latest release</a>
+              and open it.
+            </p>
+            <p class="note">
+              The package isn't notarized by Apple, so macOS may refuse to open
+              it. Go to <b>System Settings → Privacy &amp; Security</b> and click
+              <b>Open Anyway</b>, or install it from Terminal:
+            </p>
+            <pre><code>sudo installer -pkg ~/Downloads/<span class="pkg-name">Xerox-WorkCentre-3025-SpliX-&lt;version&gt;.pkg</span> -target /</code></pre>
+          </li>
+          <li>
+            <h3>Connect the printer</h3>
+            <p>Plug the WorkCentre 3025 into your Mac over USB and turn it on.</p>
+          </li>
+          <li>
+            <h3>Add the printer</h3>
+            <p>
+              Open <b>System Settings → Printers &amp; Scanners → Add Printer</b>
+              and select the WorkCentre 3025. Under <b>Use</b>, choose
+              <b class="driver-name">Xerox WorkCentre 3025 SpliX</b>. If it isn't
+              preselected, pick it with <b>Select Software…</b>
+            </p>
+          </li>
+        </ol>
+
+        <details class="more">
+          <summary>Add the printer from the command line</summary>
+          <pre><code>/usr/libexec/cups/backend/usb          # prints the printer's usb:// URI
+lpadmin -p WC3025 -E -v 'usb://Xerox/WorkCentre%203025?serial=…' \
+  -P "/Library/Printers/PPDs/Contents/Resources/Xerox WorkCentre 3025 SpliX.ppd.gz"</code></pre>
+        </details>
+
+        <details class="more">
+          <summary>Build from source</summary>
+          <p>Needs the Xcode command line tools. Clone the repository, then:</p>
+          <pre><code>make test       # optional: offline end-to-end check
+make install    # builds the .pkg in build/ and runs the installer (sudo)</code></pre>
+        </details>
+
+        <details class="more">
+          <summary>What gets installed, and how to remove it</summary>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Path</th><th>What it is</th></tr></thead>
+              <tbody>
+                <tr><td><code>/Library/Printers/SpliX/Filters/rastertoqpdl</code></td><td>CUPS filter (universal, ad-hoc signed)</td></tr>
+                <tr><td><code>/Library/Printers/PPDs/Contents/Resources/Xerox WorkCentre 3025 SpliX.ppd.gz</code></td><td>Printer description (PPD)</td></tr>
+                <tr><td><code>/Library/Printers/SpliX/COPYING</code></td><td>SpliX licence (GPL-2.0)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            From a source checkout, run <code>make uninstall</code>. Without one,
+            remove the files directly:
+          </p>
+          <pre><code>sudo rm -rf /Library/Printers/SpliX
+sudo rm -f "/Library/Printers/PPDs/Contents/Resources/Xerox WorkCentre 3025 SpliX.ppd.gz"
+sudo pkgutil --forget io.github.splix.wc3025</code></pre>
+          <p>Printer queues aren't deleted. Remove them in Printers &amp; Scanners.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="band" id="how">
+      <div class="wrap">
+        <h2>How it works</h2>
+        <p class="section-lede">
+          macOS rasterizes each page itself, halftoning included. The driver
+          only has to compress that raster and wrap it in the printer's
+          language.
+        </p>
+        <ol class="pipeline" aria-label="Print pipeline">
+          <li><span class="stage">Your app</span><span class="sub">prints</span></li>
+          <li><span class="stage">PDF</span><span class="sub">macOS print system</span></li>
+          <li><span class="stage">cgpdftoraster</span><span class="sub">Apple filter</span></li>
+          <li><span class="stage">CUPS raster</span><span class="sub">1-bit, 600/1200 DPI</span></li>
+          <li class="ours"><span class="stage">rastertoqpdl</span><span class="sub">this driver</span></li>
+          <li><span class="stage">PJL + QPDL v3</span><span class="sub">printer job</span></li>
+          <li><span class="stage">USB</span><span class="sub">WorkCentre 3025</span></li>
+        </ol>
+        <div class="cards">
+          <article>
+            <h3>Banded compression</h3>
+            <p>
+              <code>rastertoqpdl</code> slices each page into 128-row bands,
+              compresses them with Samsung's algorithm <code>0x11</code>, and
+              adds a checksum to each band.
+            </p>
+          </article>
+          <article>
+            <h3>Model parameters in the PPD</h3>
+            <p>
+              The PPD carries what SpliX needs to know about the WC3025: QPDL v3,
+              512-byte packets, the M2020 band-width table and manual duplex.
+            </p>
+          </article>
+          <article>
+            <h3>Fits macOS security</h3>
+            <p>
+              <code>/usr/libexec/cups</code> is protected by SIP, so the filter
+              lives under <code>/Library/Printers</code> and the PPD points to it
+              by full path.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="tested">
+      <div class="wrap two-col">
+        <div>
+          <h2>Tested without a printer</h2>
+          <p>
+            Every push and every release runs the real macOS print pipeline
+            offline on GitHub Actions, for A4 and Letter at 600 and 1200 DPI.
+          </p>
+          <p class="note">
+            This proves the job is well-formed and carries the right image. Only
+            a real print proves the printer accepts it.
+          </p>
+        </div>
+        <ol class="numbered">
+          <li><code>cupsfilter</code> turns a generated 2-page PDF into CUPS raster with Apple's filters and this PPD.</li>
+          <li>The built <code>rastertoqpdl</code> turns that raster into a printer job.</li>
+          <li>A Python QPDL decoder checks PJL framing, page and band headers and every band checksum.</li>
+          <li>Every band is decompressed and compared <b>bit for bit</b> with the input raster.</li>
+          <li>The chain runs again through the PPD's own filter line and must produce identical pages.</li>
+          <li>A job title with quotes and an embedded <code>@PJL</code> line must not break the job header.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band" id="test-print">
+      <div class="wrap">
+        <h2>Your first test print</h2>
+        <div class="two-col">
+          <ol class="numbered">
+            <li>
+              Print both pages of the test page:
+              <span class="inline-links">
+                <a href="test-a4.pdf">A4 (PDF)</a> ·
+                <a href="test-letter.pdf">Letter (PDF)</a>
+              </span>
+            </li>
+            <li>The frame shows on all four sides.</li>
+            <li>The diagonals are continuous, with no seam every 128 rows.</li>
+            <li>The gray ramp shows distinct steps, and page 2 follows page 1.</li>
+            <li>Print it again at <b>1200 DPI</b>, set under Printer Features in the print dialog.</li>
+          </ol>
+          <aside class="callout">
+            <h3>About 2-sided printing</h3>
+            <p>
+              The WC3025 has no duplex unit, so 2-sided jobs are
+              <b>manual</b>. The printer prints one side, then asks you to put
+              the stack back in the manual tray for the other side.
+            </p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="troubleshooting">
+      <div class="wrap two-col">
+        <div>
+          <h2>If something goes wrong</h2>
+          <p>
+            Collect the printer's device ID and a CUPS debug log, then
+            <a href="https://github.com/svdimchenko/Xerox-WorkCentre-3025-SpliX/issues/new">open an issue</a>
+            with both attached.
+          </p>
+          <p>
+            <b>Driver not preselected?</b> The PPD's device ID
+            (<code>MFG:Xerox;MDL:WorkCentre 3025;</code>) is a best guess. If
+            your printer reports a different <code>MDL:</code>, choose the
+            driver by hand. Printing works either way, and the issue helps fix
+            the guess.
+          </p>
+        </div>
+        <pre><code>/usr/libexec/cups/backend/usb    # the printer's IEEE-1284 device ID
+cupsctl --debug-logging          # then print again
+log show --last 10m \
+  --predicate 'process == "cupsd" OR process CONTAINS "rastertoqpdl"' \
+  > cups.log
+cupsctl --no-debug-logging</code></pre>
+      </div>
+    </section>
+
+    <section class="band" id="upstream">
+      <div class="wrap">
+        <h2>Changes to upstream SpliX</h2>
+        <p class="section-lede">
+          The repository's first commit is a pristine copy of
+          <a href="https://github.com/OpenPrinting/splix/tree/7a80218">OpenPrinting/splix@7a80218</a>,
+          so <code>git diff</code> against it shows every change.
+        </p>
+        <dl class="changes">
+          <dt><code>src/semaphore.cpp</code></dt>
+          <dd>Always signal on post. Upstream only signalled on the 0→1 transition, which can lose wake-ups when several threads wait.</dd>
+          <dt><code>src/cache.cpp</code></dt>
+          <dd><code>whatToDo = ~whatToDo</code> on a <code>bool</code> is always true, so the cache thread never alternated between preloading and storing. Now uses <code>!</code>.</dd>
+          <dt><code>src/printer.cpp</code></dt>
+          <dd>Job titles and user names are sanitized before going into quoted PJL strings: <code>"</code> becomes <code>'</code>, control characters become spaces, and values are cut at 79 bytes.</dd>
+          <dt><code>src/document.cpp</code></dt>
+          <dd>Reads raster headers with the current CUPS API (<code>cupsRasterReadHeader2</code>) and detects monochrome pages from <code>cupsNumColors</code>.</dd>
+        </dl>
+        <p class="note">
+          Built without JBIG, since the WC3025 uses algorithm 0x11.
+          <code>pstoqpdl</code> isn't built, because macOS rasterizes PDF itself.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <p>
+        Distributed under <a href="https://github.com/svdimchenko/Xerox-WorkCentre-3025-SpliX/blob/main/vendor/splix/COPYING">GPL-2.0</a>.
+        Built on <a href="https://github.com/OpenPrinting/splix">SpliX</a> by Aurélien Croc, Till Kamppeter and contributors.
+      </p>
+      <p class="disclaimer">
+        An independent community project, not affiliated with or endorsed by
+        Xerox or Samsung. Xerox and WorkCentre are trademarks of their
+        respective owners.
+      </p>
+    </div>
+  </footer>
+
+  <script src="main.js" defer></script>
+</body>
+</html>
